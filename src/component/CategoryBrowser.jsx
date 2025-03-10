@@ -1,6 +1,5 @@
 import React from "react";
-import CategoryIcon from "./CategoryIcon";
-
+import CategoryIcon from "./Categoryicon";
 const CategoryBrowser = () => {
   const categories = [
     { id: 1, name: "Tools", icon: "tools", itemCount: 2340 },

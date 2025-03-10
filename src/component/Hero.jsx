@@ -5,7 +5,7 @@ const Hero = () => {
     <div className="relative bg-blue-500 overflow-hidden">
       <div className="absolute inset-0">
         <img
-          src="../public/Images/FRAME.png"
+          src="/Images/FRAME.png"
           alt="People renting items"
           className="w-full h-full object-cover opacity-60"
         />

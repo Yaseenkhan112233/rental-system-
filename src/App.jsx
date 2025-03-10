@@ -5,7 +5,7 @@ import FeaturedRentals from "./component/FeaturedRentals";
 import CategoryBrowser from "./component/CategoryBrowser";
 import HowItWorks from "./component/HowItWorks";
 import SafeAndSecure from "./component/SafeAndSecure";
-// import Footer from "./components/Footer";
+import Footer from "./component/Footer";
 
 function App() {
   return (
@@ -18,7 +18,7 @@ function App() {
         <HowItWorks />
         <SafeAndSecure />
       </div>
-      {/* <Footer /> */}
+      <Footer />
     </div>
   );
 }

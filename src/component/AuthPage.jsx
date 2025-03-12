@@ -610,7 +610,7 @@ const AuthPage = () => {
         setError("Password is too weak. Please use at least 6 characters.");
       } else if (err.code === "auth/unauthorized-domain") {
         setError(
-          "You can't sign in from this device. Please use your registered device or contact support."
+          "This domain is not authorized for Firebase Authentication. The site administrator needs to add this domain to the authorized domains list in the Firebase console."
         );
       } else {
         setError(err.message || "Authentication failed. Please try again.");
@@ -644,7 +644,7 @@ const AuthPage = () => {
         setError("No user found with this email address.");
       } else if (err.code === "auth/unauthorized-domain") {
         setError(
-          "You can't reset your password from this device. Please use your registered device or contact support."
+          "This domain is not authorized for Firebase Authentication. The site administrator needs to add this domain to the authorized domains list in the Firebase console."
         );
       } else {
         setError(
@@ -697,7 +697,7 @@ const AuthPage = () => {
         );
       } else if (err.code === "auth/unauthorized-domain") {
         setError(
-          "This domain is not authorized for Firebase Authentication. Please use the app on your own device or contact support."
+          "This domain is not authorized for Firebase Authentication. The site administrator needs to add this domain to the authorized domains list in the Firebase console."
         );
       } else {
         setError(err.message || "Google sign-in failed. Please try again.");

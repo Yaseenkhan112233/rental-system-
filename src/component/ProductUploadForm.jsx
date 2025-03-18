@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { doc, collection, addDoc, setDoc } from "firebase/firestore";
 import { db } from "../firebase/Firebase"; // Assuming you have a config file
+import { getAuth } from "firebase/auth";
 
 const ProductUploadForm = () => {
   const [loading, setLoading] = useState(false);
@@ -17,14 +18,12 @@ const ProductUploadForm = () => {
     stockQuantity: "",
     warehouseLocation: "",
   });
-
+  const auth = getAuth();
+  const user = auth.currentUser;
   // Handle input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+    setFormData({ ...formData, [name]: value });
   };
 
   // Handle specifications changes
@@ -96,17 +95,86 @@ const ProductUploadForm = () => {
     fileInput.click();
   };
   // Handle form submission
+  //   const handleSubmit = async (e, isDraft = false) => {
+  //     e.preventDefault();
+  //     setLoading(true);
+  //     try {
+  //       // Process tags into an array
+  //       const tagsArray = formData.tags
+  //         .split(",")
+  //         .map((tag) => tag.trim())
+  //         .filter((tag) => tag);
+
+  //       // Format the data
+  //       const productData = {
+  //         productName: formData.productName,
+  //         category: formData.category,
+  //         brandName: formData.brandName,
+  //         sku: formData.sku,
+  //         price: parseFloat(formData.price) || 0,
+  //         description: formData.description,
+  //         specifications: formData.specifications.filter(
+  //           (spec) => spec.key && spec.value
+  //         ),
+  //         tags: tagsArray,
+  //         imageLinks: formData.imageLinks, // Save image links here
+  //         stockQuantity: parseInt(formData.stockQuantity) || 0,
+  //         warehouseLocation: formData.warehouseLocation,
+  //         status: isDraft ? "draft" : "published",
+  //         createdAt: new Date().toISOString(),
+  //       };
+
+  //       // Add the document to the appropriate Firestore collection
+  //       const collectionName = isDraft ? "productDrafts" : "products";
+  //       const docRef = await addDoc(collection(db, collectionName), productData);
+  //       console.log(
+  //         `Product ${isDraft ? "draft" : ""} added with ID: `,
+  //         docRef.id
+  //       );
+
+  //       // Reset form after successful submission if not a draft
+  //       if (!isDraft) {
+  //         setFormData({
+  //           productName: "",
+  //           category: "",
+  //           brandName: "",
+  //           sku: "",
+  //           price: "",
+  //           description: "",
+  //           specifications: [{ key: "", value: "" }],
+  //           tags: "",
+  //           imageLinks: [], // Clear image links
+  //           stockQuantity: "",
+  //           warehouseLocation: "",
+  //         });
+  //       }
+
+  //       alert(
+  //         isDraft ? "Product saved as draft!" : "Product published successfully!"
+  //       );
+  //     } catch (error) {
+  //       console.error("Error adding product: ", error);
+  //       alert("Error adding product. Please try again.");
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
   const handleSubmit = async (e, isDraft = false) => {
     e.preventDefault();
     setLoading(true);
+
     try {
+      if (!user) {
+        throw new Error("User not logged in.");
+      }
+
       // Process tags into an array
       const tagsArray = formData.tags
         .split(",")
         .map((tag) => tag.trim())
         .filter((tag) => tag);
 
-      // Format the data
+      // Format the data with userId
       const productData = {
         productName: formData.productName,
         category: formData.category,
@@ -123,6 +191,7 @@ const ProductUploadForm = () => {
         warehouseLocation: formData.warehouseLocation,
         status: isDraft ? "draft" : "published",
         createdAt: new Date().toISOString(),
+        userId: user.uid, // Add userId to link the product to the user
       };
 
       // Add the document to the appropriate Firestore collection

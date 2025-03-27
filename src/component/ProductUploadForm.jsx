@@ -700,9 +700,27 @@ const ProductUploadForm = () => {
         .filter((tag) => tag);
 
       // Format the data with userId
+      // const productData = {
+      //   productName: formData.productName,
+      //   category: formData.category, // This will now correctly match with AllProducts
+      //   brandName: formData.brandName,
+      //   sku: formData.sku,
+      //   price: parseFloat(formData.price) || 0,
+      //   description: formData.description,
+      //   specifications: formData.specifications.filter(
+      //     (spec) => spec.key && spec.value
+      //   ),
+      //   tags: tagsArray,
+      //   imageLinks: formData.imageLinks,
+      //   stockQuantity: parseInt(formData.stockQuantity) || 0,
+      //   warehouseLocation: formData.warehouseLocation,
+      //   status: isDraft ? "draft" : "published",
+      //   createdAt: new Date().toISOString(),
+      //   userId: user.uid,
+      // };
       const productData = {
         productName: formData.productName,
-        category: formData.category, // This will now correctly match with AllProducts
+        category: formData.category,
         brandName: formData.brandName,
         sku: formData.sku,
         price: parseFloat(formData.price) || 0,
@@ -717,6 +735,10 @@ const ProductUploadForm = () => {
         status: isDraft ? "draft" : "published",
         createdAt: new Date().toISOString(),
         userId: user.uid,
+        ownerId: user.uid,
+        ownerDisplayName: user.displayName || "Anonymous Seller",
+        ownerEmail: user.email || "",
+        ownerPhotoURL: user.photoURL || "",
       };
 
       // Add the document to the appropriate Firestore collection

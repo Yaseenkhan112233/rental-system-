@@ -7,194 +7,19 @@
 //   orderBy,
 //   updateDoc,
 //   doc,
+//   addDoc,
+//   serverTimestamp,
+//   onSnapshot,
 // } from "firebase/firestore";
 // import { db, auth } from "../firebase/Firebase";
 // import { useNavigate } from "react-router-dom";
-
-// const UserInbox = () => {
-//   const [conversations, setConversations] = useState([]);
-//   const [loading, setLoading] = useState(true);
-//   const [selectedConversation, setSelectedConversation] = useState(null);
-//   const currentUser = auth.currentUser;
-//   const navigate = useNavigate();
-
-//   useEffect(() => {
-//     console.log("Current User:", auth.currentUser); // Log the current user
-//     if (!auth.currentUser) {
-//       navigate("/login", { state: { from: "/inbox" } });
-//       return;
-//     }
-
-//     const fetchConversations = async () => {
-//       try {
-//         const q = query(
-//           collection(db, "messages"),
-//           where("participants", "array-contains", auth.currentUser.uid),
-//           orderBy("timestamp", "desc")
-//         );
-
-//         const querySnapshot = await getDocs(q);
-//         console.log("Query Results:", querySnapshot.docs); // Log query results
-
-//         if (querySnapshot.empty) {
-//           console.log("No matching documents found.");
-//           return;
-//         }
-
-//         // Rest of the code...
-//       } catch (error) {
-//         console.error("Error fetching conversations:", error);
-//       } finally {
-//         setLoading(false);
-//       }
-//     };
-
-//     fetchConversations();
-//   }, [navigate]);
-
-//   const openConversation = async (conversation) => {
-//     setSelectedConversation(conversation);
-
-//     // Mark messages as read
-//     const unreadMessages = conversation.messages.filter((msg) => !msg.read);
-
-//     for (const message of unreadMessages) {
-//       try {
-//         await updateDoc(doc(db, "messages", message.id), {
-//           read: true,
-//         });
-//       } catch (error) {
-//         console.error("Error marking message as read:", error);
-//       }
-//     }
-//   };
-
-//   const renderConversationList = () => {
-//     if (loading) {
-//       return <div className="text-center py-8">Loading conversations...</div>;
-//     }
-
-//     if (conversations.length === 0) {
-//       return (
-//         <div className="text-center py-8 text-gray-500">
-//           No conversations yet
-//         </div>
-//       );
-//     }
-
-//     return conversations.map((conversation) => (
-//       <div
-//         key={conversation.partnerId}
-//         className={`border-b p-4 hover:bg-gray-100 cursor-pointer flex items-center ${
-//           selectedConversation?.partnerId === conversation.partnerId
-//             ? "bg-blue-50"
-//             : ""
-//         }`}
-//         onClick={() => openConversation(conversation)}
-//       >
-//         <div className="flex-grow">
-//           <div className="flex justify-between">
-//             <h3 className="font-semibold">
-//               {conversation.productName || "Product Inquiry"}
-//             </h3>
-//             {conversation.unreadCount > 0 && (
-//               <span className="bg-red-500 text-white rounded-full px-2 py-1 text-xs">
-//                 {conversation.unreadCount}
-//               </span>
-//             )}
-//           </div>
-//           <p className="text-gray-600 text-sm truncate">
-//             {conversation.lastMessage}
-//           </p>
-//         </div>
-//       </div>
-//     ));
-//   };
-
-//   const renderConversationDetails = () => {
-//     if (!selectedConversation) {
-//       return (
-//         <div className="flex items-center justify-center h-full text-gray-500">
-//           Select a conversation to view details
-//         </div>
-//       );
-//     }
-
-//     return (
-//       <div className="h-full flex flex-col">
-//         <div className="border-b p-4 bg-gray-100">
-//           <h2 className="font-bold">{selectedConversation.productName}</h2>
-//           <p className="text-gray-600 text-sm">Product Conversation Details</p>
-//         </div>
-//         <div className="flex-grow overflow-y-auto p-4">
-//           {selectedConversation.messages.map((message) => (
-//             <div
-//               key={message.id}
-//               className={`mb-4 max-w-[80%] ${
-//                 message.senderId === currentUser.uid
-//                   ? "ml-auto text-right"
-//                   : "mr-auto text-left"
-//               }`}
-//             >
-//               <div
-//                 className={`inline-block p-3 rounded-lg ${
-//                   message.senderId === currentUser.uid
-//                     ? "bg-blue-500 text-white"
-//                     : "bg-gray-200 text-black"
-//                 }`}
-//               >
-//                 {message.content}
-//               </div>
-//               <div className="text-xs text-gray-500 mt-1">
-//                 {message.timestamp?.toDate()?.toLocaleString() || "Recent"}
-//               </div>
-//             </div>
-//           ))}
-//         </div>
-//       </div>
-//     );
-//   };
-
-//   return (
-//     <div className="container mx-auto grid grid-cols-1 md:grid-cols-3 gap-4 p-4">
-//       {/* Conversations List */}
-//       <div className="md:col-span-1 bg-white border rounded-lg">
-//         <div className="p-4 border-b">
-//           <h2 className="text-xl font-bold">Inbox</h2>
-//         </div>
-//         {renderConversationList()}
-//       </div>
-
-//       {/* Conversation Details */}
-//       <div className="md:col-span-2 bg-white border rounded-lg">
-//         {renderConversationDetails()}
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default UserInbox;
-
-// import React, { useState, useEffect } from "react";
-// import {
-//   collection,
-//   query,
-//   where,
-//   getDocs,
-//   orderBy,
-//   updateDoc,
-//   doc,
-// } from "firebase/firestore";
-// import { db, auth } from "../firebase/Firebase";
-// import { useNavigate } from "react-router-dom";
-// import { onSnapshot } from "firebase/firestore";
 
 // // Main UserInbox Component
 // const UserInbox = () => {
 //   const [conversations, setConversations] = useState([]);
 //   const [loading, setLoading] = useState(true);
 //   const [selectedConversation, setSelectedConversation] = useState(null);
-//   const [newMessage, setNewMessage] = useState(""); // For composing new messages
+//   const [newMessage, setNewMessage] = useState("");
 //   const currentUser = auth.currentUser;
 //   const navigate = useNavigate();
 
@@ -253,6 +78,7 @@
 //       );
 
 //       setConversations(sortedConversations);
+//       setLoading(false);
 //     });
 
 //     return () => unsubscribe(); // Cleanup listener on unmount
@@ -429,8 +255,7 @@
 // };
 
 // export default UserInbox;
-
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   collection,
   query,
@@ -446,7 +271,6 @@ import {
 import { db, auth } from "../firebase/Firebase";
 import { useNavigate } from "react-router-dom";
 
-// Main UserInbox Component
 const UserInbox = () => {
   const [conversations, setConversations] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -454,6 +278,12 @@ const UserInbox = () => {
   const [newMessage, setNewMessage] = useState("");
   const currentUser = auth.currentUser;
   const navigate = useNavigate();
+  const messagesEndRef = useRef(null);
+
+  // Scroll to latest message
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
 
   // Fetch Conversations
   useEffect(() => {
@@ -484,54 +314,77 @@ const UserInbox = () => {
             productId: messageData.productId,
             lastMessage: messageData.content,
             timestamp: messageData.timestamp,
-            unreadCount: messageData.read === false ? 1 : 0,
+            unreadCount:
+              messageData.read === false &&
+              messageData.senderId !== currentUser.uid
+                ? 1
+                : 0,
             messages: [messageData],
           });
         } else {
-          const existingConversation = conversationMap.get(otherParticipantId);
-          existingConversation.messages.push(messageData);
+          const existing = conversationMap.get(otherParticipantId);
+          existing.messages.push(messageData);
 
           if (
-            !existingConversation.timestamp ||
-            messageData.timestamp > existingConversation.timestamp
+            !existing.timestamp ||
+            messageData.timestamp > existing.timestamp
           ) {
-            existingConversation.lastMessage = messageData.content;
-            existingConversation.timestamp = messageData.timestamp;
+            existing.lastMessage = messageData.content;
+            existing.timestamp = messageData.timestamp;
           }
 
-          if (messageData.read === false) {
-            existingConversation.unreadCount += 1;
+          if (
+            messageData.read === false &&
+            messageData.senderId !== currentUser.uid
+          ) {
+            existing.unreadCount += 1;
           }
         }
       });
 
-      const sortedConversations = Array.from(conversationMap.values()).sort(
+      const sorted = Array.from(conversationMap.values()).sort(
         (a, b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0)
       );
 
-      setConversations(sortedConversations);
+      setConversations(sorted);
+
+      // Auto update selected conversation messages
+      if (selectedConversation) {
+        const updated = sorted.find(
+          (c) => c.partnerId === selectedConversation.partnerId
+        );
+        setSelectedConversation(updated);
+      }
+
       setLoading(false);
     });
 
-    return () => unsubscribe(); // Cleanup listener on unmount
-  }, [currentUser, navigate]);
+    return () => unsubscribe();
+  }, [currentUser, navigate, selectedConversation?.partnerId]);
+
+  // Scroll to bottom when messages update
+  useEffect(() => {
+    scrollToBottom();
+  }, [selectedConversation]);
 
   // Open a Conversation
   const openConversation = async (conversation) => {
     setSelectedConversation(conversation);
 
-    const unreadMessages = conversation.messages.filter((msg) => !msg.read);
+    const unreadMessages = conversation.messages.filter(
+      (msg) => !msg.read && msg.receiverId === currentUser.uid
+    );
 
-    for (const message of unreadMessages) {
+    for (const msg of unreadMessages) {
       try {
-        await updateDoc(doc(db, "messages", message.id), { read: true });
-      } catch (error) {
-        console.error("Error marking message as read:", error);
+        await updateDoc(doc(db, "messages", msg.id), { read: true });
+      } catch (err) {
+        console.error("Error updating read status:", err);
       }
     }
   };
 
-  // Handle Sending a New Message
+  // Send Message
   const handleSendMessage = async () => {
     if (!newMessage.trim()) return;
 
@@ -547,13 +400,20 @@ const UserInbox = () => {
         participants: [currentUser.uid, selectedConversation.partnerId],
       });
 
-      setNewMessage(""); // Clear input field
-    } catch (error) {
-      console.error("Error sending message:", error);
+      setNewMessage("");
+    } catch (err) {
+      console.error("Failed to send message:", err);
     }
   };
 
-  // Render the Conversation List
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleSendMessage();
+    }
+  };
+
+  // Render Inbox
   const renderConversationList = () => {
     if (loading) {
       return <div className="text-center py-8">Loading conversations...</div>;
@@ -577,9 +437,7 @@ const UserInbox = () => {
         }`}
         onClick={() => openConversation(conversation)}
       >
-        {/* Profile Picture Placeholder */}
-        <div className="w-10 h-10 bg-gray-300 rounded-full mr-4 flex-shrink-0"></div>
-
+        <div className="w-10 h-10 bg-gray-300 rounded-full mr-4 flex-shrink-0" />
         <div className="flex-grow">
           <div className="flex justify-between items-center">
             <h3 className="font-semibold text-sm">
@@ -599,7 +457,7 @@ const UserInbox = () => {
     ));
   };
 
-  // Render the Conversation Details
+  // Render Chat Details
   const renderConversationDetails = () => {
     if (!selectedConversation) {
       return (
@@ -609,9 +467,12 @@ const UserInbox = () => {
       );
     }
 
+    const sortedMessages = [...selectedConversation.messages].sort(
+      (a, b) => a.timestamp?.seconds - b.timestamp?.seconds
+    );
+
     return (
       <div className="h-full flex flex-col">
-        {/* Header */}
         <div className="border-b p-4 bg-gray-100">
           <h2 className="font-bold text-lg">
             {selectedConversation.productName}
@@ -619,40 +480,43 @@ const UserInbox = () => {
           <p className="text-gray-600 text-sm">Product Conversation Details</p>
         </div>
 
-        {/* Chat Messages */}
         <div className="flex-grow overflow-y-auto p-4 space-y-4">
-          {selectedConversation.messages.map((message) => (
+          {sortedMessages.map((msg) => (
             <div
-              key={message.id}
+              key={msg.id}
               className={`flex ${
-                message.senderId === currentUser.uid
+                msg.senderId === currentUser.uid
                   ? "justify-end"
                   : "justify-start"
               }`}
             >
               <div
-                className={`max-w-[70%] p-3 rounded-lg ${
-                  message.senderId === currentUser.uid
+                className={`max-w-[70%] p-3 rounded-lg relative ${
+                  msg.senderId === currentUser.uid
                     ? "bg-blue-500 text-white rounded-tr-none"
                     : "bg-gray-200 text-black rounded-tl-none"
                 }`}
               >
-                <p>{message.content}</p>
-                <div className="text-xs text-gray-500 mt-1 text-right">
-                  {message.timestamp?.toDate()?.toLocaleString() || "Recent"}
+                <p>{msg.content}</p>
+                <div className="text-xs text-gray-200 mt-1 text-right">
+                  {msg.timestamp?.toDate()?.toLocaleTimeString() || "Now"}
+                  {msg.senderId === currentUser.uid && (
+                    <span className="ml-2">{msg.read ? "✓✓" : "✓"}</span>
+                  )}
                 </div>
               </div>
             </div>
           ))}
+          <div ref={messagesEndRef} />
         </div>
 
-        {/* Compose Message Input */}
         <div className="border-t p-4 bg-white">
           <div className="flex items-center space-x-2">
             <input
               type="text"
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
+              onKeyDown={handleKeyDown}
               placeholder="Type a message..."
               className="flex-grow p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
@@ -670,15 +534,12 @@ const UserInbox = () => {
 
   return (
     <div className="container mx-auto grid grid-cols-1 md:grid-cols-3 gap-4 p-4">
-      {/* Conversations List */}
       <div className="md:col-span-1 bg-white border rounded-lg">
         <div className="p-4 border-b">
           <h2 className="text-xl font-bold">Inbox</h2>
         </div>
         {renderConversationList()}
       </div>
-
-      {/* Conversation Details */}
       <div className="md:col-span-2 bg-white border rounded-lg">
         {renderConversationDetails()}
       </div>

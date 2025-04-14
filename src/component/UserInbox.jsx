@@ -255,6 +255,7 @@
 // };
 
 // export default UserInbox;
+
 import React, { useState, useEffect, useRef } from "react";
 import {
   collection,
@@ -279,6 +280,7 @@ const UserInbox = () => {
   const currentUser = auth.currentUser;
   const navigate = useNavigate();
   const messagesEndRef = useRef(null);
+  const [unsubscribeListener, setUnsubscribeListener] = useState(null);
 
   // Scroll to latest message
   const scrollToBottom = () => {
@@ -368,21 +370,44 @@ const UserInbox = () => {
   }, [selectedConversation]);
 
   // Open a Conversation
-  const openConversation = async (conversation) => {
+  const openConversation = (conversation) => {
     setSelectedConversation(conversation);
 
-    const unreadMessages = conversation.messages.filter(
-      (msg) => !msg.read && msg.receiverId === currentUser.uid
+    // Cleanup old listener if any
+    if (unsubscribeListener) unsubscribeListener();
+
+    const q = query(
+      collection(db, "messages"),
+      where("productId", "==", conversation.productId),
+      where("participants", "array-contains", currentUser.uid),
+      orderBy("timestamp")
     );
 
-    for (const msg of unreadMessages) {
-      try {
-        await updateDoc(doc(db, "messages", msg.id), { read: true });
-      } catch (err) {
-        console.error("Error updating read status:", err);
-      }
-    }
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const messages = [];
+      snapshot.forEach((docSnap) => {
+        const data = { id: docSnap.id, ...docSnap.data() };
+        messages.push(data);
+
+        // If new message is from the other person and you're in chat, mark it read
+        if (data.receiverId === currentUser.uid && data.read === false) {
+          updateDoc(doc(db, "messages", docSnap.id), { read: true });
+        }
+      });
+
+      setSelectedConversation((prev) => ({
+        ...prev,
+        messages,
+      }));
+    });
+
+    setUnsubscribeListener(() => unsubscribe);
   };
+  useEffect(() => {
+    return () => {
+      if (unsubscribeListener) unsubscribeListener();
+    };
+  }, [unsubscribeListener]);
 
   // Send Message
   const handleSendMessage = async () => {

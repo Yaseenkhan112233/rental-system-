@@ -502,7 +502,18 @@ const ProductDetail = () => {
   }
 
   if (!product) {
-    return <div className="container mx-auto p-4">Product not found</div>;
+    return (
+      <div className="container mx-auto p-4 text-center">
+        <h2 className="text-3xl font-bold">Product Not Found</h2>
+        <p className="text-lg text-gray-500">
+          Sorry, the product you're looking for doesn't exist. Please check the
+          URL or go back to the homepage.
+        </p>
+        <Link to="/" className="text-blue-600 hover:text-blue-800">
+          Go to Homepage
+        </Link>
+      </div>
+    );
   }
 
   // Default image if imageLinks is empty or undefined

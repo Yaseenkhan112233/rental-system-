@@ -144,7 +144,7 @@ const Footer = () => {
       className="bg-gray-900 text-gray-400 py-10"
       aria-label="Footer Section"
     >
-      <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-8">
+      <div id="footer" className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-8">
         {/* Company Section */}
         <div>
           <h3 className="text-white font-semibold mb-4">Company</h3>

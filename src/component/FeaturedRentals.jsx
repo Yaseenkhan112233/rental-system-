@@ -1,3 +1,4 @@
+
 // import React, { useEffect, useState } from "react";
 // import { collection, getDocs, query, orderBy, limit } from "firebase/firestore";
 // import { db } from "../firebase/Firebase";
@@ -7,6 +8,7 @@
 // const FeaturedRentals = () => {
 //   const [products, setProducts] = useState([]);
 //   const [loading, setLoading] = useState(true);
+//   const [error, setError] = useState(null); // Added error state
 
 //   useEffect(() => {
 //     const fetchProducts = async () => {
@@ -25,6 +27,7 @@
 //         setProducts(productsData);
 //       } catch (error) {
 //         console.error("Error fetching products: ", error);
+//         setError("Failed to load products. Please try again later."); // Set error message
 //       } finally {
 //         setLoading(false);
 //       }
@@ -58,9 +61,27 @@
 //         </Link>
 //       </div>
 
+//       {/* Error Message */}
+//       {error && <p className="text-center text-red-500">{error}</p>}
+
 //       {/* Product Grid */}
 //       {loading ? (
-//         <p className="text-center text-gray-500">Loading products...</p>
+//         <div className="flex justify-center items-center">
+//           <svg
+//             className="animate-spin h-8 w-8 text-blue-600"
+//             xmlns="http://www.w3.org/2000/svg"
+//             fill="none"
+//             viewBox="0 0 24 24"
+//             stroke="currentColor"
+//           >
+//             <path
+//               strokeLinecap="round"
+//               strokeLinejoin="round"
+//               strokeWidth={2}
+//               d="M12 2v4M12 18v4m-6-6h4m8 0h4m-5.293-5.293l2.828 2.828M5.707 5.707L8.535 8.535m9.192 9.192l2.828-2.828M5.707 18.707L8.535 15.879"
+//             />
+//           </svg>
+//         </div>
 //       ) : (
 //         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
 //           {products.length > 0 ? (
@@ -93,48 +114,88 @@
 
 // export default FeaturedRentals;
 
+
+
 import React, { useEffect, useState } from "react";
 import { collection, getDocs, query, orderBy, limit } from "firebase/firestore";
 import { db } from "../firebase/Firebase";
 import RentalCard from "./RentalCards";
 import { Link } from "react-router-dom";
 
-const FeaturedRentals = () => {
+const FeaturedRentals = ({ filteredProducts, selectedLocation, searchTerm }) => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null); // Added error state
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const q = query(
-          collection(db, "products"),
-          orderBy("createdAt", "desc"),
-          limit(4)
-        );
+        setLoading(true);
+        console.log("🔄 FeaturedRentals useEffect triggered");
+        console.log("📦 filteredProducts:", filteredProducts);
+        console.log("📍 selectedLocation:", selectedLocation);
+        
+        // If we have filtered products from Hero search, use them
+        if (filteredProducts && filteredProducts.length > 0) {
+          console.log("✅ Using filtered products:", filteredProducts.length);
+          setProducts(filteredProducts.slice(0, 4)); // Limit to 4 for featured
+          setLoading(false);
+          return;
+        }
+        
+        // If location is selected but no products found, show empty state
+        if (selectedLocation && filteredProducts && filteredProducts.length === 0) {
+          console.log("⚠️ Location selected but no products found");
+          setProducts([]);
+          setLoading(false);
+          return;
+        }
+        
+        // Default behavior: fetch featured products when no location is selected
+        if (!selectedLocation) {
+          console.log("🏠 Loading default products (no location selected)");
+          const q = query(
+            collection(db, "products"),
+            orderBy("createdAt", "desc"),
+            limit(4)
+          );
 
-        const querySnapshot = await getDocs(q);
-        const productsData = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        setProducts(productsData);
+          const querySnapshot = await getDocs(q);
+          const productsData = querySnapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          }));
+          console.log("📋 Default products loaded:", productsData.length);
+          setProducts(productsData);
+        } else {
+          // If location is selected but filteredProducts is null/undefined, keep loading
+          console.log("⏳ Location selected but no filtered products yet, keeping loading state");
+        }
       } catch (error) {
-        console.error("Error fetching products: ", error);
-        setError("Failed to load products. Please try again later."); // Set error message
+        console.error("❌ Error fetching products: ", error);
+        setError("Failed to load products. Please try again later.");
       } finally {
         setLoading(false);
       }
     };
 
     fetchProducts();
-  }, []);
+  }, [filteredProducts, selectedLocation, searchTerm]);
+
+  const getHeaderText = () => {
+    if (selectedLocation) {
+      return `Featured Rentals in ${selectedLocation}`;
+    }
+    return "Featured Rentals";
+  };
+
+  console.log("🎯 Current products to display:", products.length);
 
   return (
     <div className="mt-6 mb-12">
-      {/* Header with View All link updated to use React Router */}
+      {/* Header with View All link */}
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-2xl font-bold text-gray-900">Featured Rentals</h2>
+        <h2 className="text-2xl font-bold text-gray-900">{getHeaderText()}</h2>
         <Link
           to="/all-products"
           className="text-blue-600 hover:text-blue-800 flex items-center text-sm"
@@ -157,6 +218,8 @@ const FeaturedRentals = () => {
 
       {/* Error Message */}
       {error && <p className="text-center text-red-500">{error}</p>}
+
+  
 
       {/* Product Grid */}
       {loading ? (
@@ -195,6 +258,10 @@ const FeaturedRentals = () => {
                 />
               </Link>
             ))
+          ) : selectedLocation ? (
+            <p className="text-center text-gray-500 col-span-full">
+              No products available in {selectedLocation}.
+            </p>
           ) : (
             <p className="text-center text-gray-500 col-span-full">
               No products available.
@@ -207,3 +274,7 @@ const FeaturedRentals = () => {
 };
 
 export default FeaturedRentals;
+
+
+
+

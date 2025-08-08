@@ -25,7 +25,7 @@ const HowItWorks = () => {
   ];
 
   return (
-    <div className="my-16">
+    <div id="how-it-works" className="my-16">
       <h2 className="text-2xl font-bold text-gray-900 text-center mb-12">
         How It Works
       </h2>

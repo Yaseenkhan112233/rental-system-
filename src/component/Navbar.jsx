@@ -24,7 +24,7 @@ const Navbar = () => {
     if (isLoggedIn) {
       setIsModalOpen(prev => !prev); // Open modal if logged in
     } else {
-      navigate("/login"); // Redirect to login if not logged in
+      navigate("/auth"); // Redirect to auth page if not logged in
     }
   };
 
@@ -94,7 +94,22 @@ const Navbar = () => {
                 >
                   My Account
                 </Link>
-              ) : null}
+              ) : (
+                <>
+                  <Link
+                    to="/auth"
+                    className="text-gray-500 hover:text-gray-700 px-3 py-2 text-sm font-medium"
+                  >
+                    Login
+                  </Link>
+                  <Link
+                    to="/auth?mode=signup"
+                    className="ml-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700"
+                  >
+                    Sign Up
+                  </Link>
+                </>
+              )}
               <button
                 onClick={handleListItem}
                 className="ml-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700"

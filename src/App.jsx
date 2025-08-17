@@ -107,7 +107,7 @@ const AppRoutes = ({ user }) => {
       />
       <Route
         path="/"
-        element={user ? <HomePage /> : <Navigate to="/auth" replace />}
+        element={<HomePage />}
       />
       <Route
         path="/account"
@@ -127,7 +127,7 @@ const AppRoutes = ({ user }) => {
       <Route path="/all-products" element={<AllProducts />} />
       <Route
         path="*"
-        element={<Navigate to={user ? "/" : "/auth"} replace />}
+        element={<Navigate to="/" replace />}
       />
     </Routes>
   );
